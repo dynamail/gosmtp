@@ -1,4 +1,4 @@
-# go-smtp
+# gosmtp 📬
 
 [![godocs.io](https://godocs.io/github.com/emersion/go-smtp?status.svg)](https://godocs.io/github.com/emersion/go-smtp)
 [![builds.sr.ht status](https://builds.sr.ht/~emersion/go-smtp/commits.svg)](https://builds.sr.ht/~emersion/go-smtp/commits?)
@@ -24,7 +24,7 @@ import (
 	"strings"
 
 	"github.com/emersion/go-sasl"
-	"github.com/emersion/go-smtp"
+	"github.com/dynamail/gosmtp"
 )
 
 func main() {
@@ -56,7 +56,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/emersion/go-smtp"
+	"github.com/dynamail/gosmtp"
 )
 
 func main() {
@@ -92,7 +92,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/emersion/go-smtp"
+	"github.com/dynamail/gosmtp"
 )
 
 // The Backend implements SMTP server methods.

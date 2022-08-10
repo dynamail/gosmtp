@@ -1,4 +1,4 @@
-module github.com/dynamail/go-smtp
+module github.com/dynamail/gosmtp
 
 require github.com/emersion/go-sasl v0.0.0-20211008083017-0b9dcfb154ac // indirect
 

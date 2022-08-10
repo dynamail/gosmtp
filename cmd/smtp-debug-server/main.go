@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/dynamail/go-smtp"
+	"github.com/dynamail/gosmtp"
 )
 
 var addr = "127.0.0.1:1025"

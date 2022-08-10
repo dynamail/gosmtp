@@ -3,7 +3,7 @@ package backendutil
 import (
 	"io"
 
-	"github.com/dynamail/go-smtp"
+	"github.com/dynamail/gosmtp"
 )
 
 // TransformBackend is a backend that transforms messages.
