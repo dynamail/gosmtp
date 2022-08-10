@@ -2,7 +2,7 @@ image: alpine/edge
 packages:
   - go
 sources:
-  - https://github.com/emersion/go-smtp
+  - https://github.com/dynamail/gosmtp
 artifacts:
   - coverage.html
 tasks:
