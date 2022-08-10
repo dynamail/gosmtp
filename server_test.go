@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/emersion/go-smtp"
+	"github.com/dynamail/gosmtp"
 )
 
 type message struct {

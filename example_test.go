@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dynamail/gosmtp"
 	"github.com/emersion/go-sasl"
-	"github.com/emersion/go-smtp"
 )
 
 func ExampleDial() {

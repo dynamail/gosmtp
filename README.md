@@ -1,9 +1,9 @@
 # gosmtp 📬
 
-[![godocs.io](https://godocs.io/github.com/emersion/go-smtp?status.svg)](https://godocs.io/github.com/emersion/go-smtp)
+[![godocs.io](https://godocs.io/github.com/dynamail/gosmtp?status.svg)](https://godocs.io/github.com/dynamail/gosmtp)
 [![builds.sr.ht status](https://builds.sr.ht/~emersion/go-smtp/commits.svg)](https://builds.sr.ht/~emersion/go-smtp/commits?)
 
-An ESMTP client and server library written in Go. (Originally forked from https://github.com/emersion/go-smtp)
+An ESMTP client and server library written in Go. (Originally forked from https://github.com/dynamail/gosmtp)
 
 ## Features
 
