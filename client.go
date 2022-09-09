@@ -426,6 +426,24 @@ func (c *Client) Rcpt(to string) error {
 	return nil
 }
 
+// RcptWithNotify issues a RCPT command to the server using the provided email address.
+// A call to Rcpt must be preceded by a call to Mail and may be followed by
+// a Data call or another Rcpt call.
+// It includes the NOTIFY parameter to the RCPT command, which can be any of the following:
+// "NEVER", "SUCCESS", "FAILURE", "DELAY"
+//
+// If server returns an error, it will be of type *SMTPError.
+func (c *Client) RcptWithNotify(to string, notify ...string) error {
+	if err := validateLine(to); err != nil {
+		return err
+	}
+	if _, _, err := c.cmd(25, "RCPT TO:<%s> NOTIFY=%s", to, strings.Join(notify, ",")); err != nil {
+		return err
+	}
+	c.rcpts = append(c.rcpts, to)
+	return nil
+}
+
 type dataCloser struct {
 	c *Client
 	io.WriteCloser
@@ -540,15 +558,21 @@ func (c *Client) LMTPData(lmtpStatusCb func(rcpt string, status *SMTPError)) (io
 // fields such as "From", "To", "Subject", and "Cc".  Sending "Bcc"
 // messages is accomplished by including an email address in the to
 // parameter but not including it in the r headers.
-func (c *Client) SendMail(from string, to []string, r io.Reader) error {
+func (c *Client) SendMail(from string, to []string, r io.Reader, notify ...string) error {
 	var err error
 
 	if err = c.Mail(from, nil); err != nil {
 		return err
 	}
 	for _, addr := range to {
-		if err = c.Rcpt(addr); err != nil {
-			return err
+		if len(notify) > 0 {
+			if err = c.RcptWithNotify(addr, notify...); err != nil {
+				return err
+			}
+		} else {
+			if err = c.Rcpt(addr); err != nil {
+				return err
+			}
 		}
 	}
 	w, err := c.Data(nil)
