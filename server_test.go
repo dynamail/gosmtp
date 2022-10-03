@@ -284,7 +284,7 @@ func TestServerAcceptErrorHandling(t *testing.T) {
 	s := smtp.NewServer(be)
 	s.Domain = "localhost"
 	s.AllowInsecureAuth = true
-	s.ErrorLog = log.New(errorLog, "", 0)
+	s.Logger = log.New(errorLog, "", 0)
 
 	l := newFailingListener()
 	var serveError error

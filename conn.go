@@ -94,7 +94,7 @@ func (c *Conn) handle(cmd string, arg string) {
 			c.Close()
 
 			stack := debug.Stack()
-			c.server.ErrorLog.Printf("panic serving %v: %v\n%s", c.conn.RemoteAddr(), err, stack)
+			c.server.Logger.Error(nil, fmt.Sprintf("panic serving %v: %v\n%s", c.conn.RemoteAddr(), err, stack))
 		}
 	}()
 
@@ -790,7 +790,7 @@ func (c *Conn) handlePanic(err interface{}, status *statusCollector) {
 	}
 
 	stack := debug.Stack()
-	c.server.ErrorLog.Printf("panic serving %v: %v\n%s", c.conn.RemoteAddr(), err, stack)
+	c.server.Logger.Error(nil, fmt.Sprintf("panic serving %v: %v\n%s", c.conn.RemoteAddr(), err, stack))
 }
 
 func (c *Conn) createStatusCollector() *statusCollector {
@@ -883,7 +883,7 @@ func (c *Conn) handleDataLMTP() {
 					})
 
 					stack := debug.Stack()
-					c.server.ErrorLog.Printf("panic serving %v: %v\n%s", c.conn.RemoteAddr(), err, stack)
+					c.server.Logger.Error(nil, fmt.Sprintf("panic serving %v: %v\n%s", c.conn.RemoteAddr(), err, stack))
 					done <- false
 				}
 			}()
