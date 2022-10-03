@@ -28,7 +28,7 @@ func ExampleDial() {
 	if err := c.Mail("sender@example.org", nil); err != nil {
 		log.Fatal(err)
 	}
-	if err := c.Rcpt("recipient@example.net"); err != nil {
+	if err := c.Rcpt("recipient@example.net", nil); err != nil {
 		log.Fatal(err)
 	}
 
