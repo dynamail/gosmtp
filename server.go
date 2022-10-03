@@ -67,6 +67,10 @@ type Server struct {
 	// If set, it will replace the default greeting message "ESMTP Service Ready".
 	Greeting string
 
+	// Manages to intercept incoming connections before being greeted to perform
+	// things like rate limiting.
+	ConnectionHandler func(conn *Conn) error
+
 	caps  []string
 	auths map[string]SaslServerFactory
 	done  chan struct{}
@@ -168,6 +172,12 @@ func (s *Server) handleConn(c *Conn) error {
 			c.conn.SetWriteDeadline(time.Now().Add(d))
 		}
 		if err := tlsConn.Handshake(); err != nil {
+			return err
+		}
+	}
+
+	if s.ConnectionHandler != nil {
+		if err := s.ConnectionHandler(c); err != nil {
 			return err
 		}
 	}
