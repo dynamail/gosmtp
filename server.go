@@ -64,6 +64,9 @@ type Server struct {
 	// The server backend.
 	Backend Backend
 
+	// If set, it will replace the default greeting message "ESMTP Service Ready".
+	Greeting string
+
 	caps  []string
 	auths map[string]SaslServerFactory
 	done  chan struct{}

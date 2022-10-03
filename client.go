@@ -415,7 +415,7 @@ func (c *Client) Mail(from string, opts *MailOptions) error {
 // a Data call or another Rcpt call.
 //
 // If server returns an error, it will be of type *SMTPError.
-func (c *Client) Rcpt(to string) error {
+func (c *Client) Rcpt(to string, options *RcptOptions) error {
 	if err := validateLine(to); err != nil {
 		return err
 	}
@@ -570,7 +570,7 @@ func (c *Client) SendMail(from string, to []string, r io.Reader, notify ...strin
 				return err
 			}
 		} else {
-			if err = c.Rcpt(addr); err != nil {
+			if err = c.Rcpt(addr, nil); err != nil {
 				return err
 			}
 		}
