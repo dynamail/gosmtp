@@ -59,6 +59,11 @@ type MailOptions struct {
 	Auth *string
 }
 
+type RcptOptions struct {
+	// Value of NOTIFY= argument, NEVER, SUCCESS, FAILURE, or DELAY.
+	Notify string
+}
+
 // Session is used by servers to respond to an SMTP client.
 //
 // The methods are called when the remote client issues the matching command.
