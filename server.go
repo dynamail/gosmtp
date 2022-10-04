@@ -80,7 +80,7 @@ func NewServer(be Backend) *Server {
 
 		Backend: be,
 		done:    make(chan struct{}, 1),
-		Logger:  createLogger(),
+		Logger:  DefaultLogger(),
 		caps:    []string{"PIPELINING", "8BITMIME", "ENHANCEDSTATUSCODES", "CHUNKING"},
 		auths: map[string]SaslServerFactory{
 			sasl.Plain: func(conn *Conn) sasl.Server {
