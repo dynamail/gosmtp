@@ -94,7 +94,7 @@ func (c *Conn) handle(cmd string, arg string) {
 			c.Close()
 
 			stack := debug.Stack()
-			c.server.ErrorLog.Printf("panic serving %v: %v\n%s", c.conn.RemoteAddr(), err, stack)
+			c.server.Logger.Error(nil, fmt.Sprintf("panic serving %v: %v\n%s", c.conn.RemoteAddr(), err, stack))
 		}
 	}()
 
@@ -227,7 +227,6 @@ func (c *Conn) handleGreet(enhanced bool, arg string) {
 		c.writeResponse(501, EnhancedCode{5, 5, 2}, "Domain/address argument required for HELO")
 		return
 	}
-	c.helo = domain
 
 	sess, err := c.server.Backend.NewSession(c)
 	if err != nil {
@@ -238,6 +237,8 @@ func (c *Conn) handleGreet(enhanced bool, arg string) {
 		c.writeResponse(451, EnhancedCode{4, 0, 0}, err.Error())
 		return
 	}
+
+	c.helo = domain
 	c.setSession(sess)
 
 	if !enhanced {
@@ -790,7 +791,7 @@ func (c *Conn) handlePanic(err interface{}, status *statusCollector) {
 	}
 
 	stack := debug.Stack()
-	c.server.ErrorLog.Printf("panic serving %v: %v\n%s", c.conn.RemoteAddr(), err, stack)
+	c.server.Logger.Error(nil, fmt.Sprintf("panic serving %v: %v\n%s", c.conn.RemoteAddr(), err, stack))
 }
 
 func (c *Conn) createStatusCollector() *statusCollector {
@@ -883,7 +884,7 @@ func (c *Conn) handleDataLMTP() {
 					})
 
 					stack := debug.Stack()
-					c.server.ErrorLog.Printf("panic serving %v: %v\n%s", c.conn.RemoteAddr(), err, stack)
+					c.server.Logger.Error(nil, fmt.Sprintf("panic serving %v: %v\n%s", c.conn.RemoteAddr(), err, stack))
 					done <- false
 				}
 			}()

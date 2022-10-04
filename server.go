@@ -4,9 +4,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"io"
-	"log"
 	"net"
-	"os"
 	"sync"
 	"time"
 
@@ -17,12 +15,6 @@ var errTCPAndLMTP = errors.New("smtp: cannot start LMTP server listening on a TC
 
 // A function that creates SASL servers.
 type SaslServerFactory func(conn *Conn) sasl.Server
-
-// Logger interface is used by Server to report unexpected internal errors.
-type Logger interface {
-	Printf(format string, v ...interface{})
-	Println(v ...interface{})
-}
 
 // A SMTP server.
 type Server struct {
@@ -41,7 +33,7 @@ type Server struct {
 	AllowInsecureAuth bool
 	Strict            bool
 	Debug             io.Writer
-	ErrorLog          Logger
+	Logger            Logger
 	ReadTimeout       time.Duration
 	WriteTimeout      time.Duration
 
@@ -86,10 +78,10 @@ func NewServer(be Backend) *Server {
 		// Doubled maximum line length per RFC 5321 (Section 4.5.3.1.6)
 		MaxLineLength: 2000,
 
-		Backend:  be,
-		done:     make(chan struct{}, 1),
-		ErrorLog: log.New(os.Stderr, "smtp/server ", log.LstdFlags),
-		caps:     []string{"PIPELINING", "8BITMIME", "ENHANCEDSTATUSCODES", "CHUNKING"},
+		Backend: be,
+		done:    make(chan struct{}, 1),
+		Logger:  createLogger(),
+		caps:    []string{"PIPELINING", "8BITMIME", "ENHANCEDSTATUSCODES", "CHUNKING"},
 		auths: map[string]SaslServerFactory{
 			sasl.Plain: func(conn *Conn) sasl.Server {
 				return sasl.NewPlainServer(func(identity, username, password string) error {
@@ -120,6 +112,7 @@ func (s *Server) Serve(l net.Listener) error {
 
 	for {
 		c, err := l.Accept()
+		s.Logger.Debug("Accepted connection")
 		if err != nil {
 			select {
 			case <-s.done:
@@ -136,7 +129,7 @@ func (s *Server) Serve(l net.Listener) error {
 				if max := 1 * time.Second; tempDelay > max {
 					tempDelay = max
 				}
-				s.ErrorLog.Printf("accept error: %s; retrying in %s", err, tempDelay)
+				s.Logger.Error(err, "accept error: %s; retrying in %s", tempDelay)
 				time.Sleep(tempDelay)
 				continue
 			}
@@ -145,7 +138,7 @@ func (s *Server) Serve(l net.Listener) error {
 		go func() {
 			err := s.handleConn(newConn(c, s))
 			if err != nil {
-				s.ErrorLog.Printf("handler error: %s", err)
+				s.Logger.Error(err, "handler error: %s")
 			}
 		}()
 	}
@@ -165,6 +158,7 @@ func (s *Server) handleConn(c *Conn) error {
 	}()
 
 	if tlsConn, ok := c.conn.(*tls.Conn); ok {
+		s.Logger.Debug("Starting TLS handshake")
 		if d := s.ReadTimeout; d != 0 {
 			c.conn.SetReadDeadline(time.Now().Add(d))
 		}
@@ -177,11 +171,14 @@ func (s *Server) handleConn(c *Conn) error {
 	}
 
 	if s.ConnectionHandler != nil {
+		s.Logger.Debug("Executing connection handler")
+
 		if err := s.ConnectionHandler(c); err != nil {
 			return err
 		}
 	}
 
+	s.Logger.Debug("Sending greeting")
 	c.greet()
 
 	for {
