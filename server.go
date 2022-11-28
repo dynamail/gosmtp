@@ -150,7 +150,7 @@ func (s *Server) handleConn(c *Conn) error {
 	s.locker.Unlock()
 
 	defer func() {
-		c.Close()
+		_ = c.Close()
 
 		s.locker.Lock()
 		delete(s.conns, c)
