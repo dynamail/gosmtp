@@ -80,7 +80,7 @@ func NewServer(be Backend) *Server {
 
 		Backend: be,
 		done:    make(chan struct{}, 1),
-		Logger:  createLogger(),
+		Logger:  DefaultLogger(),
 		caps:    []string{"PIPELINING", "8BITMIME", "ENHANCEDSTATUSCODES", "CHUNKING"},
 		auths: map[string]SaslServerFactory{
 			sasl.Plain: func(conn *Conn) sasl.Server {
@@ -150,7 +150,7 @@ func (s *Server) handleConn(c *Conn) error {
 	s.locker.Unlock()
 
 	defer func() {
-		c.Close()
+		_ = c.Close()
 
 		s.locker.Lock()
 		delete(s.conns, c)
@@ -172,6 +172,7 @@ func (s *Server) handleConn(c *Conn) error {
 
 	if s.ConnectionHandler != nil {
 		s.Logger.Debug("Executing connection handler")
+
 		if err := s.ConnectionHandler(c); err != nil {
 			return err
 		}

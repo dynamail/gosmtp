@@ -2,6 +2,7 @@ package smtp
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 )
@@ -69,9 +70,16 @@ func (l logger) Warn(msg string, v ...interface{}) {
 	l.l.Printf(fmt.Sprintf("warn - %s", msg), v...)
 }
 
-func createLogger() Logger {
+func DefaultLogger() Logger {
 	return &logger{
 		l:     log.New(os.Stdout, "smtp/server ", log.LstdFlags),
+		level: Info,
+	}
+}
+
+func CreateLogger(w io.Writer) Logger {
+	return &logger{
+		l:     log.New(w, "smtp/server ", log.LstdFlags),
 		level: Info,
 	}
 }
