@@ -94,7 +94,11 @@ func (c *Conn) handle(cmd string, arg string) {
 			c.Close()
 
 			stack := debug.Stack()
-			c.server.Logger.Error(nil, fmt.Sprintf("panic serving %v: %v\n%s", c.conn.RemoteAddr(), err, stack))
+			if c.conn != nil {
+				c.server.Logger.Error(nil, fmt.Sprintf("panic serving %v: %v\n%s", c.conn.RemoteAddr(), err, stack))
+			} else {
+				c.server.Logger.Error(nil, fmt.Sprintf("panic serving closed connection: %v\n%s", err, stack))
+			}
 		}
 	}()
 
@@ -182,7 +186,13 @@ func (c *Conn) Close() error {
 		c.session = nil
 	}
 
-	return c.conn.Close()
+	if c.conn != nil {
+		err := c.conn.Close()
+		c.conn = nil
+		return err
+	}
+
+	return nil
 }
 
 // TLSConnectionState returns the connection's TLS connection state.
