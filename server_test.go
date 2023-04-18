@@ -310,11 +310,12 @@ func TestServerAcceptErrorHandling(t *testing.T) {
 }
 
 func TestServer_custom_greeting(t *testing.T) {
-	_, s, _, scanner := testServer(t)
-	defer s.Close()
-
 	customGreeting := "gosmtp says hello"
-	s.Greeting = customGreeting
+
+	_, s, _, scanner := testServer(t, func(server *smtp.Server) {
+		server.Greeting = customGreeting
+	})
+	defer s.Close()
 
 	scanner.Scan()
 	if scanner.Text() != fmt.Sprintf("220 localhost %s", customGreeting) {
