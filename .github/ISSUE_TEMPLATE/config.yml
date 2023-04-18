@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Feature Request
+    url: "https://github.com/dynamail/gosmtp/discussions/new?category=ideas"
+    about: "Please suggest new features in Discussions"
   - name: Question
-    url: "https://web.libera.chat/gamja/#emersion"
-    about: "Please ask questions in #emersion on Libera Chat"
+    url: "https://github.com/dynamail/gosmtp/discussions"
+    about: "Please ask questions in Discussions"
