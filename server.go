@@ -11,7 +11,10 @@ import (
 	"github.com/emersion/go-sasl"
 )
 
-var errTCPAndLMTP = errors.New("smtp: cannot start LMTP server listening on a TCP socket")
+var (
+	errTCPAndLMTP = errors.New("smtp: cannot start LMTP server listening on a TCP socket")
+	errConnDenied = errors.New("smtp: connection denied")
+)
 
 // A function that creates SASL servers.
 type SaslServerFactory func(conn *Conn) sasl.Server
@@ -138,7 +141,11 @@ func (s *Server) Serve(l net.Listener) error {
 		go func() {
 			err := s.handleConn(newConn(c, s))
 			if err != nil {
-				s.Logger.Error(err, "error handling connection")
+				if errors.Is(err, errConnDenied) {
+					c.Close()
+				} else {
+					s.Logger.Error(err, "error handling connection")
+				}
 			}
 		}()
 	}
@@ -174,7 +181,8 @@ func (s *Server) handleConn(c *Conn) error {
 		s.Logger.Debug("Executing connection handler")
 
 		if err := s.ConnectionHandler(c); err != nil {
-			return err
+			s.Logger.Debug("Connection handler returned error")
+			return errConnDenied
 		}
 	}
 
