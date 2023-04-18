@@ -138,7 +138,7 @@ func (s *Server) Serve(l net.Listener) error {
 		go func() {
 			err := s.handleConn(newConn(c, s))
 			if err != nil {
-				s.Logger.Error(err, "handler error: %s")
+				s.Logger.Error(err, "error handling connection")
 			}
 		}()
 	}
