@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net"
@@ -305,6 +306,19 @@ func TestServerAcceptErrorHandling(t *testing.T) {
 	}
 	if !strings.Contains(errorLog.String(), temporaryError.String()) {
 		t.Fatal("Missing temporary error in log output:", errorLog.String())
+	}
+}
+
+func TestServer_custom_greeting(t *testing.T) {
+	_, s, _, scanner := testServer(t)
+	defer s.Close()
+
+	customGreeting := "gosmtp says hello"
+	s.Greeting = customGreeting
+
+	scanner.Scan()
+	if scanner.Text() != fmt.Sprintf("220 localhost %s", customGreeting) {
+		t.Fatal("Invalid greeting:", scanner.Text())
 	}
 }
 
